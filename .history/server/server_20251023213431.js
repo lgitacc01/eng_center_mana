@@ -7,8 +7,8 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 
 // Routes chúng ta vừa tạo
-import authRoutes from "./routes/authRoutes.js";
-import dataRoutes from "./routes/dataRoutes.js";
+import authRoutes from "./routes/auth.js";
+import dataRoutes from "./routes/data.js";
 
 dotenv.config();
 

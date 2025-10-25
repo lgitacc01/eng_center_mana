@@ -8,7 +8,10 @@ function HomePage() {
       <div className="absolute top-6 right-6">
         <a
           href="/login"
-
+          className="text-white font-semibold bg-gradient-to-r from-sky-500 to-blue-600
+                     hover:from-sky-600 hover:to-blue-700
+                     py-2 px-6 rounded-lg shadow-md hover:shadow-xl
+                     transition-all duration-300 ease-in-out"
         >
           Đăng nhập
         </a>

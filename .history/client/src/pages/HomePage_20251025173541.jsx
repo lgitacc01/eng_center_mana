@@ -8,7 +8,6 @@ function HomePage() {
       <div className="absolute top-6 right-6">
         <a
           href="/login"
-
         >
           Đăng nhập
         </a>

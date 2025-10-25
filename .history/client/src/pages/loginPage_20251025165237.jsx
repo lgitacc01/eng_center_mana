@@ -1,18 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import api from '../api/apiConfig'; // FIX: Tạm thời vô hiệu hóa import này vì file không tồn tại
-
-// FIX: Tạo một đối tượng 'api' giả lập để component có thể chạy
-// mà không bị lỗi biên dịch.
-// Nó sẽ giả lập việc gọi API và trả về một lỗi (Promise.reject).
-const api = {
-  post: (url, data) => {
-    console.log('Đang gọi API giả lập (POST):', url, data);
-    // Giả lập một lỗi để bạn có thể thấy thông báo lỗi hiển thị
-    return Promise.reject(new Error('API giả lập: Sai thông tin'));
-  }
-};
-
+import api from '../api/apiConfig';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -25,7 +13,7 @@ const LoginPage = () => {
     setMessage('');
     try {
       const response = await api.post('/auth/login', { username, password });
-      alert('Đăng nhập thành công!'); // Giữ lại alert theo yêu cầu
+      alert('Đăng nhập thành công!');
       navigate('/');
     } catch (error) {
       setMessage('Đăng nhập thất bại. Sai tên đăng nhập hoặc mật khẩu.');
@@ -34,10 +22,6 @@ const LoginPage = () => {
   };
 
   return (
-    // FIX: Thêm container full-screen để căn giữa
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white flex items-center justify-center p-4">
-
-      {/* Đây là toàn bộ code form của bạn, không thay đổi */}
       <div className="bg-gray-800/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl max-w-sm w-full border border-gray-700">
         <h2 className="text-3xl font-extrabold text-white text-center mb-6 tracking-wide">
           Đăng Nhập
@@ -101,10 +85,8 @@ const LoginPage = () => {
           </span>
         </p>
       </div>
-      
-    </div>
+    
   );
 };
 
 export default LoginPage;
-

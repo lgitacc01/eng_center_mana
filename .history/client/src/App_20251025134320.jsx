@@ -2,11 +2,11 @@ import { Outlet, Link } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white overflow-hidden relative">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
       
-      {/* Navbar nổi trên nền */}
-      <nav className="absolute top-0 left-0 w-full bg-gray-800/70 backdrop-blur-md p-4 shadow-md z-10">
-        <div className="flex gap-6 justify-center">
+      {/* Navbar */}
+      <nav className="bg-gray-800/90 backdrop-blur-md p-4 shadow-md w-full">
+        <div className="container mx-auto flex gap-6">
           <Link 
             to="/" 
             className="text-white font-semibold hover:text-blue-400 transition-colors"
@@ -22,8 +22,9 @@ function App() {
         </div>
       </nav>
 
-      {/* Phần nội dung chiếm toàn bộ màn hình */}
-      <main className="flex items-center justify-center w-full h-full">
+      {/* Outlet nằm trong main có flex-grow để lấp đầy */}
+      <main className="flex-1 flex items-center justify-center min-h-screen">
+
         <Outlet />
       </main>
     </div>

@@ -16,6 +16,9 @@ a:hover {
 }
 
 body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
   background-color: #ffffff; /* ✅ Override nền trắng */
   display: flex;
   place-items: center;
@@ -48,6 +51,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
+    background-color: #ffffff;
   }
   a:hover {
     color: #747bff;

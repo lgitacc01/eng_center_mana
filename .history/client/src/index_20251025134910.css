@@ -16,6 +16,9 @@ a:hover {
 }
 
 body {
+  margin: 0;
+  min-width: px;
+  min-height: 100vh;
   background-color: #ffffff; /* ✅ Override nền trắng */
   display: flex;
   place-items: center;

@@ -16,6 +16,8 @@ a:hover {
 }
 
 body {
+  margin: 0;
+ 
   background-color: #ffffff; /* ✅ Override nền trắng */
   display: flex;
   place-items: center;

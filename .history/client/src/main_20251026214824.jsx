@@ -6,6 +6,7 @@ import './index.css';
 // --- Import các trang (Pages) ---
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import TeacherDashboard from './pages/TeacherPages/TeacherDashboard.jsx';
 import StudentDashboard from './pages/StudentPages/StudentDashboard.jsx';
 import TeacherDashboard from './pages/TeacherPages/TeacherDashboard.jsx';
 import AdminDashboard from './pages/AdminPages/AdminDashboard.jsx';

@@ -30,7 +30,7 @@ const LoginPage = () => {
       // 3. ĐIỀU HƯỚNG DỰA TRÊN ROLE
       switch (role) {
         case 1:
-          navigate('/admin/info');
+          navigate('/admin');
           break;
         case 2:
           navigate('/teacher');

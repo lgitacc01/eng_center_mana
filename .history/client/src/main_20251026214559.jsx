@@ -6,8 +6,8 @@ import './index.css';
 // --- Import các trang (Pages) ---
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import StudentDashboard from './pages/StudentPages/StudentDashboard.jsx';
-import TeacherDashboard from './pages/TeacherPages/TeacherDashboard.jsx';
+import TeacherDashboard from './pages/TeacherDashboard.jsx';
+import StudentDashboard from './pages/StudentDashboard.jsx';
 import AdminDashboard from './pages/AdminPages/AdminDashboard.jsx';
 
 // 👇 1. IMPORT TRANG CON CỦA ADMIN 

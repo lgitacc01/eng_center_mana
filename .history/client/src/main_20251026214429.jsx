@@ -6,12 +6,12 @@ import './index.css';
 // --- Import các trang (Pages) ---
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import StudentDashboard from './pages/StudentPages/StudentDashboard.jsx';
-import TeacherDashboard from './pages/TeacherPages/TeacherDashboard.jsx';
-import AdminDashboard from './pages/AdminPages/AdminDashboard.jsx';
+import adminDashboard from './AdminPages/AdminDashboard.jsx'
+import TeacherDashboard from './pages/TeacherDashboard.jsx';
+import StudentDashboard from './pages/StudentDashboard.jsx';
 
-// 👇 1. IMPORT TRANG CON CỦA ADMIN 
-import AdminInfoPage from './pages/AdminPages/AdminInforPage.jsx';
+// 👇 1. IMPORT TRANG CON CỦA ADMIN
+import AdminInfoPage from './pages/AdminInforPage.jsx'; 
 // (Giả sử bạn có các trang khác, bạn cũng sẽ import chúng ở đây)
 // import AdminDocumentsPage from './pages/AdminDocumentsPage.jsx';
 // import AdminClassesPage from './pages/AdminClassesPage.jsx';

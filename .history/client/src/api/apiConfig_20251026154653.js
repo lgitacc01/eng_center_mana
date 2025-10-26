@@ -15,6 +15,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken'); 
+    console.log("Attaching token to request:", token);
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token;
     }
@@ -39,7 +40,8 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
-        console.log("Access token hết hạn, đang thử làm mới bằng refresh token...");
+        console.log("Attempting to refresh token with refreshToken:", refreshToken);
+
         // GỌI API /auth/refresh
         // Lưu ý: Đường dẫn này phải khớp với cách bạn gọi login,
         // ví dụ: nếu bạn login bằng '/auth/login' thì refresh là '/auth/refresh'

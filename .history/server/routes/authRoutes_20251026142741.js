@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
     );
 
     // Gửi CẢ HAI token về cho client
-    res.json({ accessToken, refreshToken, role: user.role_id ,id: user.user_id}); // 👈 THAY ĐỔI
+    res.json({ accessToken, refreshToken,role }); // 👈 THAY ĐỔI
 
   } catch (error) {
     res.status(500).json({ error: error.message });

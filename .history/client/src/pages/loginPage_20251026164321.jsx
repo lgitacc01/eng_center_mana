@@ -24,8 +24,8 @@ const LoginPage = () => {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('role', role);
-      localStorage.setItem('userId', response.data.id); // Lưu user ID vào localStorage
-      console.log("User ID:", response.data.id);
+      localStorage.setItem('userId', user_id=response.data.id); // Lưu user ID vào localStorage
+      console.log("User ID:", user_id);
 
       // 3. ĐIỀU HƯỚNG DỰA TRÊN ROLE
       switch (role) {

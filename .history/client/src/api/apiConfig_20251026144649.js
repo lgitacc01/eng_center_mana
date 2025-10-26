@@ -1,15 +1,15 @@
+// File: services/apiConfig.js
+
 import axios from 'axios';
 
-// Tạo một instance Axios
+// 1. TẠO INSTANCE AXIOS
 const api = axios.create({
-  baseURL: 'http://localhost:5000', // URL cơ sở của backend
+  // URL gốc của backend (KHÔNG CÓ /api)
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000', // 👈 ĐÃ SỬA
   headers: {
     'Content-Type': 'application/json',
-    // Bạn có thể thêm các headers mặc định khác ở đây
-    // ví dụ: 'Authorization': 'Bearer ' + token
   }
 });
-
 
 // 2. INTERCEPTOR GỬI REQUEST (Gắn accessToken)
 api.interceptors.request.use(
@@ -39,7 +39,7 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
-        console.log("Access token hết hạn, đang thử làm mới bằng refresh token...");
+
         // GỌI API /auth/refresh
         // Lưu ý: Đường dẫn này phải khớp với cách bạn gọi login,
         // ví dụ: nếu bạn login bằng '/auth/login' thì refresh là '/auth/refresh'

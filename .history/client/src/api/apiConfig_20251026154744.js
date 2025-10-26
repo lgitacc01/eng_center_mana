@@ -39,7 +39,7 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
-        console.log("Access token hết hạn, đang thử làm mới bằng refresh token...");
+
         // GỌI API /auth/refresh
         // Lưu ý: Đường dẫn này phải khớp với cách bạn gọi login,
         // ví dụ: nếu bạn login bằng '/auth/login' thì refresh là '/auth/refresh'

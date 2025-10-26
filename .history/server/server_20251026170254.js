@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 });
 
 // Route /users (của bạn)
-app.use("/users", verifyToken, userRoutes);
+app.use("/users",verifyToken, userRoutes);
 
 // Routes xác thực (Auth)
 // Endpoint: /auth/login, /auth/register

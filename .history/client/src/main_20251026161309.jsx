@@ -11,7 +11,7 @@ import TeacherDashboard from './pages/TeacherDashboard.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
 
 // 👇 1. IMPORT TRANG CON CỦA ADMIN
-import AdminInfoPage from './pages/AdminInforPage.jsx'; 
+import AdminInfoPage from './pages/AdminInfoPage.jsx'; 
 // (Giả sử bạn có các trang khác, bạn cũng sẽ import chúng ở đây)
 // import AdminDocumentsPage from './pages/AdminDocumentsPage.jsx';
 // import AdminClassesPage from './pages/AdminClassesPage.jsx';

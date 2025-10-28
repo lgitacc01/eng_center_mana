@@ -26,13 +26,9 @@ mongoose.connect(process.env.MONGO_URI)
 app.get("/", (req, res) => {
   res.send("Hello from MongoDB Atlas!");
 });
-<<<<<<< HEAD
-console.log("hello hehe");
-=======
 console.log("test ci form long!");
-console.log("test ci form long3!");
+console.log("test ci form long2!");
 
->>>>>>> main
 // Route /users (của bạn)
 app.use("/users", verifyToken, userRoutes);
 

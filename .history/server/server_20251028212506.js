@@ -27,7 +27,6 @@ app.get("/", (req, res) => {
   res.send("Hello from MongoDB Atlas!");
 });
 console.log("test ci form long!");
-console.log("test ci form long3!");
 
 // Route /users (của bạn)
 app.use("/users", verifyToken, userRoutes);

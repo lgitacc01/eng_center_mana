@@ -20,7 +20,6 @@ function StudentDashboard() {
         setMessage(res.data.message);
       })
       .catch(_err => {
-        console.error(_err);
         setError('Không thể tải dữ liệu Student');
       });
   }, []);

@@ -10,8 +10,7 @@ import {
 import api from '../../api/apiConfig'; 
 
 function StudentDashboard() {
-  const [_message, setMessage] = useState('');
-  const [_error, setError] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate(); 
 
   useEffect(() => {
@@ -19,8 +18,7 @@ function StudentDashboard() {
       .then(res => {
         setMessage(res.data.message);
       })
-      .catch(_err => {
-        console.error(_err);
+      .catch(err => {
         setError('Không thể tải dữ liệu Student');
       });
   }, []);

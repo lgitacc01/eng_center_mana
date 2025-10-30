@@ -26,8 +26,10 @@ export default defineConfig([
      rules: {
        // Báo cho ESLint: Biến nào bắt đầu bằng gạch dưới (_)
        // thì được phép không sử dụng
-       "@typescript-eslint/no-unused-vars": "off",
-       "no-irregular-whitespace": "off"
+       "@typescript-eslint/no-unused-vars": [
+         "error",
+         { "argsIgnorePattern": "^_" }
+       ]
      }
   }
 ]);

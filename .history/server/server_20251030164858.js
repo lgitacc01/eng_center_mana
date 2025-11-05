@@ -26,7 +26,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.get("/", (req, res) => {
   res.send("Hello from MongoDB Atlas!");
 });
-console.log("eslint chay dum")
+console.log("okokok")
 
 // Route /users (của bạn)
 app.use("/users", verifyToken, userRoutes);

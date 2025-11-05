@@ -24,8 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Route test
 app.get("/", (req, res) => {
-  res.send("Hello from MongoDB Atlas merge from main!");
-
+  res.send("Hello from MongoDB Atlas123!");
 });
 
 

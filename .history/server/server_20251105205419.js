@@ -24,7 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Route test
 app.get("/", (req, res) => {
-  res.send("Hello from MongoDB Atlas123run!");
+  res.send("Hello from MongoDB Atlas1!");
 });
 
 

@@ -16,6 +16,13 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Sai thông tin đăng nhập' });
     }
 
+    // Kiểm tra trạng thái tài khoản
+    // Nếu status là 'inactive' (đã bị khóa/xóa mềm) thì chặn luôn
+    if (user.status === 'inactive') {
+      return res.status(403).json({ msg: 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ Quản trị viên.' });
+    }
+    // ---------------------------------------------------
+
     // So sánh mật khẩu
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -27,7 +34,6 @@ router.post('/login', async (req, res) => {
     const accessTokenPayload = {
       user: {
         id: user._id,
-        user_id: user.user_id,
         username: user.username,
         full_name: user.full_name,
         role: user.role_id
@@ -56,7 +62,19 @@ router.post('/login', async (req, res) => {
     );
 
     // Gửi CẢ HAI token về cho client
-    res.json({ accessToken, refreshToken, role: user.role_id ,id: user.user_id}); // 👈 THAY ĐỔI
+    res.json({ 
+      accessToken, 
+      refreshToken, 
+      id: user._id,
+      role: user.role_id,
+      user: {
+        id: user._id,
+        full_name: user.full_name, 
+        email: user.email,         
+        avatar: user.avatar,
+        role: user.role_id
+      }
+    });
 
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -88,7 +106,6 @@ router.post('/refresh', async (req, res) => {
     const newAccessTokenPayload = {
       user: {
         id: user._id,
-        user_id: user.user_id,
         username: user.username,
         full_name: user.full_name,
         role: user.role_id

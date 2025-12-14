@@ -117,12 +117,6 @@ const chartData = [
 export default function TeacherGrades() {
   const [selectedClass, setSelectedClass] = useState("all");
   // const [selectedStudent, setSelectedStudent] = useState(null);
-  const [setIsAddGradeOpen] = useState(false);
-  const [setNewGrade] = useState({
-    skill: "",
-    score: "",
-    note: "",
-  });
 
   const filteredGrades = selectedClass === "all" 
     ? mockGrades 

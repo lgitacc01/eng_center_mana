@@ -176,16 +176,16 @@ export default function TeacherMaterials() {
     }
   };
 
-  // 5. Xử lý Xóa
-  const handleDelete = async (id) => {
-    if(!window.confirm("Bạn chắc chắn muốn xóa tài liệu này?")) return;
-    try {
-        await api.delete(`/materials/${id}`);
-        setMaterials(materials.filter(m => m.id !== id));
-    } catch (error) {
-        alert("Lỗi khi xóa");
-    }
-  };
+  // // 5. Xử lý Xóa
+  // const handleDelete = async (id) => {
+  //   if(!window.confirm("Bạn chắc chắn muốn xóa tài liệu này?")) return;
+  //   try {
+  //       await api.delete(`/materials/${id}`);
+  //       setMaterials(materials.filter(m => m.id !== id));
+  //   } catch (error) {
+  //       alert("Lỗi khi xóa");
+  //   }
+  // };
 
   
   // const handleView = (filePath) => {
@@ -572,7 +572,7 @@ export default function TeacherMaterials() {
                       {material.scope !== 'center' && (
                         <>
                           <DropdownMenuItem onClick={() => handleEditClick(material)}><Edit className="w-4 h-4 mr-2" /> Chỉnh sửa</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteMaterial(material.id)}><Trash2 className="w-4 h-4 mr-2" /> Xóa</DropdownMenuItem>
+                        {/* <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteMaterial(material.id)}><Trash2 className="w-4 h-4 mr-2" /> Xóa</DropdownMenuItem> */}
                         </>
                       )}
                     </DropdownMenuContent>
@@ -706,10 +706,10 @@ export default function TeacherMaterials() {
                           <Edit className="w-4 h-4 mr-2" />
                           Sửa
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteMaterial(material.id)}>
+                        {/* <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteMaterial(material.id)}>
                           <Trash2 className="w-4 h-4 mr-2" />
                           Xóa
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

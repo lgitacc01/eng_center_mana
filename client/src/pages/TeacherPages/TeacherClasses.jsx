@@ -22,7 +22,6 @@ export default function TeacherClasses() {
 
   const navigate = useNavigate();
 
-  const [setIsDialogOpen] = useState(false);
 
   // --- LẤY DỮ LIỆU TỪ API ---
   useEffect(() => {

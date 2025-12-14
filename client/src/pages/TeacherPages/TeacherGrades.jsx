@@ -116,9 +116,9 @@ const chartData = [
 
 export default function TeacherGrades() {
   const [selectedClass, setSelectedClass] = useState("all");
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [isAddGradeOpen, setIsAddGradeOpen] = useState(false);
-  const [newGrade, setNewGrade] = useState({
+  // const [selectedStudent, setSelectedStudent] = useState(null);
+  const [setIsAddGradeOpen] = useState(false);
+  const [setNewGrade] = useState({
     skill: "",
     score: "",
     note: "",
@@ -128,11 +128,11 @@ export default function TeacherGrades() {
     ? mockGrades 
     : mockGrades.filter(student => student.className === selectedClass);
 
-  const handleAddGrade = () => {
-    // Handle adding new grade
-    setIsAddGradeOpen(false);
-    setNewGrade({ skill: "", score: "", note: "" });
-  };
+  // const handleAddGrade = () => {
+  //   // Handle adding new grade
+  //   setIsAddGradeOpen(false);
+  //   setNewGrade({ skill: "", score: "", note: "" });
+  // };
 
   const getGradeColor = (score) => {
     if (score >= 9.0) return "text-green-600 bg-green-50";

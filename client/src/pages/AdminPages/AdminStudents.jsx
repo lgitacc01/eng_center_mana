@@ -11,13 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
 import { Plus, Search, Edit, Trash2, Mail, Phone, Calendar, BookOpen, MoreVertical, Award, Lock, Unlock} from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../components/ui/dropdown-menu';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 
 
 
 export default function AdminStudents() {
   const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState([]);
+  const [setLoading] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -180,7 +180,8 @@ export default function AdminStudents() {
         ));
         alert(`${action} thành công!`);
     } catch (error) {
-        alert("Lỗi khi thao tác");
+      console.error(error);
+      alert("Lỗi khi thao tác");
     }
   };
 

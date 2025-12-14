@@ -10,7 +10,7 @@ import {
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Badge } from "../../components/ui/badge";
+// import { Badge } from "../../components/ui/badge";
 import { Textarea } from "../../components/ui/textarea";
 import {
   Select,
@@ -40,23 +40,23 @@ import {
   User,
   Bell,
   Shield,
-  Eye,
+  // Eye,
   Upload,
   Save,
   Trash2,
   Key,
   Mail,
-  Phone,
+  // Phone,
   Clock,
   BookOpen,
   Palette,
   Volume2,
-  Moon,
-  Sun,
+  // Moon,
+  // Sun,
 } from "lucide-react";
 
 export default function TeacherSettings() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // const [isDarkMode, setIsDarkMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
     name: "",

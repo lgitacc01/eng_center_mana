@@ -1,5 +1,5 @@
 // CreateAssignment.jsx
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import api from '../../api/apiConfig';
 import {
   Card,
@@ -33,7 +33,7 @@ import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import { toast } from "sonner";
 import {
   Plus,
-  Upload,
+  // Upload,
   Brain,
   Sparkles,
   Save,

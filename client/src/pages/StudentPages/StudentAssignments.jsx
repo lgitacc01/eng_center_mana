@@ -49,8 +49,8 @@ export function StudentAssignments() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // --- STATE NỘP BÀI TỰ LUẬN (Upload) ---
-  const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
-  const [submissionText, setSubmissionText] = useState('');
+  // const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
+  // const [submissionText, setSubmissionText] = useState('');
 
   // 1. LẤY DANH SÁCH BÀI TẬP
   useEffect(() => {
@@ -100,6 +100,7 @@ export function StudentAssignments() {
         }
       }
     } catch (error) {
+      console.error(error);
       toast.error("Không thể tải nội dung bài tập.");
     }
   };
@@ -201,16 +202,16 @@ export function StudentAssignments() {
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-          case "completed":
-      return <CheckCircle className="w-4 h-4 text-green-500" />;
-    case "overdue":
-      return <AlertTriangle className="w-4 h-4 text-red-500" />;
-    default:
-      return <Circle className="w-4 h-4 text-gray-400" />;
-    }
-  };
+  // const getStatusIcon = (status) => {
+  //   switch (status) {
+  //         case "completed":
+  //     return <CheckCircle className="w-4 h-4 text-green-500" />;
+  //   case "overdue":
+  //     return <AlertTriangle className="w-4 h-4 text-red-500" />;
+  //   default:
+  //     return <Circle className="w-4 h-4 text-gray-400" />;
+  //   }
+  // };
 
   const getTypeColor = (type) => {
     switch (type) {
@@ -222,15 +223,15 @@ export function StudentAssignments() {
     }
   };
 
-  const getTypeText = (type) => {
-    switch (type) {
-      case 'grammar': return '📚 Ngữ pháp';
-      case 'vocabulary': return '📝 Từ vựng';
-      // case 'speaking': return '🎤 Nói';
-      case 'reading': return '📖 Đọc';
-      default: return '📋 Khác';
-    }
-  };
+  // const getTypeText = (type) => {
+  //   switch (type) {
+  //     case 'grammar': return '📚 Ngữ pháp';
+  //     case 'vocabulary': return '📝 Từ vựng';
+  //     // case 'speaking': return '🎤 Nói';
+  //     case 'reading': return '📖 Đọc';
+  //     default: return '📋 Khác';
+  //   }
+  // };
 
   const isOverdue = (dueDate) => new Date(dueDate) < new Date();
 
@@ -248,7 +249,7 @@ export function StudentAssignments() {
     return `Còn ${hours} giờ`;
   };
 
-  const filteredAssignments = assignments.filter(assignment => {
+  const filteredAssignments = assignments.filter(() => {
     if (activeTab === 'all') return true;
     // Logic filter cơ bản: Nếu tab là 'completed' thì hiện bài đã làm
     // Lưu ý: Backend cần trả về field 'isSubmitted' hoặc status tương ứng để filter chuẩn hơn

@@ -199,10 +199,6 @@ export function StudentSettings() {
     toast.success('Đã cập nhật cài đặt riêng tư! 🔒');
   };
 
-  const handleChangePassword = () => {
-    toast.success('Đã gửi email đổi mật khẩu! 📧');
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}

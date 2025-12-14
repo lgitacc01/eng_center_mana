@@ -1,4 +1,4 @@
-import React, {useState, useEffect, use} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/apiConfig';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
@@ -6,12 +6,12 @@ import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { 
   Users, 
-  Plus, 
+  // Plus, 
   Calendar, 
-  Clock, 
+  // Clock, 
   MapPin, 
-  Edit,
-  Trash2,
+  // Edit,
+  // Trash2,
   BookOpen,
   GraduationCap
 } from 'lucide-react';
@@ -22,7 +22,7 @@ export default function TeacherClasses() {
 
   const navigate = useNavigate();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [setIsDialogOpen] = useState(false);
 
   // --- LẤY DỮ LIỆU TỪ API ---
   useEffect(() => {
@@ -114,30 +114,30 @@ export default function TeacherClasses() {
     }
   };
 
-  const handleCreateClass = () => {
-    const id = Math.max(...classes.map(c => c.id)) + 1;
-    const classData = {
-      id,
-      ...newClass,
-      students,
-      maxStudents: parseInt(newClass.maxStudents),
-      teacher: 'Cô Linh',
-      status: 'pending',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
+  // const handleCreateClass = () => {
+  //   const id = Math.max(...classes.map(c => c.id)) + 1;
+  //   const classData = {
+  //     id,
+  //     ...newClass,
+  //     students,
+  //     maxStudents: parseInt(newClass.maxStudents),
+  //     teacher: 'Cô Linh',
+  //     status: 'pending',
+  //     startDate: new Date().toISOString().split('T')[0],
+  //     endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  //   };
     
-    setClasses([...classes, classData]);
-    setNewClass({
-      name: '',
-      level: '',
-      maxStudents: '',
-      schedule: '',
-      room: '',
-      description: ''
-    });
-    setIsDialogOpen(false);
-  };
+  //   setClasses([...classes, classData]);
+  //   setNewClass({
+  //     name: '',
+  //     level: '',
+  //     maxStudents: '',
+  //     schedule: '',
+  //     room: '',
+  //     description: ''
+  //   });
+  //   setIsDialogOpen(false);
+  // };
 
   return (
     <div className="space-y-6">

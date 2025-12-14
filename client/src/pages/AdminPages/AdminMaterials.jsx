@@ -80,7 +80,9 @@ export default function AdminMaterials() {
         // Nếu đang ở tab Approved thì reload, nếu không thì chuyển tab
         if (activeTab === 'approved') fetchMaterials();
         else setActiveTab('approved');
-    } catch (e) { alert("Lỗi upload"); }
+    } catch (e) {
+      console.error(e); 
+      alert("Lỗi upload"); }
   };
 
   // 3. Xử lý Duyệt / Từ chối / Duyệt lại
@@ -96,7 +98,8 @@ export default function AdminMaterials() {
           alert("Cập nhật trạng thái thành công!");
           fetchMaterials(); // Reload list
       } catch (error) {
-          alert("Lỗi khi cập nhật trạng thái");
+        console.error(error);
+        alert("Lỗi khi cập nhật trạng thái");
       }
   };
 
@@ -106,7 +109,9 @@ export default function AdminMaterials() {
     try {
         await api.delete(`/materials/${id}`);
         fetchMaterials();
-    } catch (error) { alert("Lỗi xóa"); }
+    } catch (error) {
+      console.error(error); 
+      alert("Lỗi xóa"); }
   };
 
   const handleView = (filePath) => {

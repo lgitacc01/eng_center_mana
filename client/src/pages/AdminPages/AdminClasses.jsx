@@ -18,7 +18,7 @@ import { Table, TableBody, TableHeader, TableHead, TableRow, TableCell } from '.
 export default function AdminClasses() {
   const [classes, setClasses] = useState([]);
   const [teachers, setTeachers] = useState([]); // State lưu danh sách giáo viên để chọn
-  const [loading, setLoading] = useState(false);
+  const [setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -209,6 +209,7 @@ export default function AdminClasses() {
       await api.delete(`/classes/${id}`);
       setClasses(classes.map(c => c.id === id ? { ...c, status: 'inactive' } : c ));
     } catch (error) {
+      console.error(error);
       alert("Lỗi khi thao tác");
     }
   };
@@ -252,6 +253,7 @@ export default function AdminClasses() {
         setSelectedClass(res.data); // Lưu dữ liệu lớp (kèm danh sách học sinh) vào state
         setIsDetailOpen(true); // Mở Dialog
     } catch (error) {
+        console.error(error);
         alert("Không thể tải thông tin lớp học");
     }
   };

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+// import React, {useState} from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
@@ -131,13 +131,6 @@ export default function TeacherDashboard() {
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face'
     }
   ];
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(amount);
-  };
 
   return (
     <div className="space-y-6">

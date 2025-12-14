@@ -483,6 +483,7 @@ function SidebarMenuButton({
   size = "default",
   tooltip,
   className,
+  children,
   ...props
 }) {
   const Comp = asChild ? Slot : "button";
@@ -666,6 +667,7 @@ function SidebarMenuSubButton({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export {
   Sidebar,
   SidebarContent,

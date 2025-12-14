@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Progress } from "../components/ui/progress";
+// import { Progress } from "../components/ui/progress";
 import { 
   BookOpen, 
   Users, 
-  GraduationCap, 
+  // GraduationCap, 
   ClipboardList, 
   DollarSign, 
   Calendar,
@@ -16,17 +16,17 @@ import {
   Clock,
   TrendingUp,
   Shield,
-  Smartphone,
+  // Smartphone,
   Globe,
   Star,
   CheckCircle,
-  ArrowRight,
-  Play,
+  // ArrowRight,
+  // Play,
   Award,
   Target,
   Zap,
   Heart,
-  Brain,
+  // Brain,
   Lightbulb
 } from 'lucide-react';
 

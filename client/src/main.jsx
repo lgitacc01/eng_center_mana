@@ -46,6 +46,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 // --- COMPONENT ĐIỀU HƯỚNG SPLASH SCREEN ---
 // Component này sẽ quyết định hiển thị Splash hay Landing
+// eslint-disable-next-line react-refresh/only-export-components
 const AppEntry = () => {
   const [showSplash, setShowSplash] = useState(true);
 
@@ -65,6 +66,7 @@ const AppEntry = () => {
 // Đây là chìa khóa để sửa lỗi của bạn.
 // Nó nằm TRONG Router (để dùng được useNavigate trong AuthProvider)
 // Và nó BỌC lấy tất cả các trang con (để cung cấp useAuth cho LoginForm, MainLayout...)
+// eslint-disable-next-line react-refresh/only-export-components
 const RootLayout = () => {
   return (
     <AuthProvider>

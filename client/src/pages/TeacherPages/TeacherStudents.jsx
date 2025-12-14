@@ -33,10 +33,10 @@ export default function TeacherStudents() {
   const [loading, setLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterClass, setFilterClass] = useState(location.state?.selectedClassId || 'all');
+  const [filterClass] = useState(location.state?.selectedClassId || 'all');
 
   const [filterStatus, setFilterStatus] = useState('all');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // --- 1. FETCH DATA TỪ API ---
   useEffect(() => {

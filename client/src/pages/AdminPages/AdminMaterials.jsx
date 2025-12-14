@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../api/apiConfig';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
@@ -28,7 +28,7 @@ export default function AdminMaterials() {
   });
 
   // 1. Fetch Data theo Status
-  const fetchMaterials = async () => {
+  const fetchMaterials = useCallback(async () => {
     setLoading(true);
     try {
       // Gọi API kèm query param status
@@ -52,12 +52,12 @@ export default function AdminMaterials() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
 
   // Gọi lại API mỗi khi chuyển Tab
   useEffect(() => {
     fetchMaterials();
-  }, [activeTab]);
+  }, [fetchMaterials]);
 
   // 2. Handle Upload (Admin Upload)
   const handleUpload = async () => {

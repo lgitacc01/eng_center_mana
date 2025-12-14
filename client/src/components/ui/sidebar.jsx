@@ -497,7 +497,9 @@ function SidebarMenuButton({
       data-active={isActive}
       className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
       {...props}
-    />
+    >
+      {children}
+    </Comp>  
   );
 
   if (!tooltip) {
@@ -667,7 +669,7 @@ function SidebarMenuSubButton({
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+/* eslint-disable react-refresh/only-export-components */
 export {
   Sidebar,
   SidebarContent,
@@ -694,3 +696,4 @@ export {
   SidebarTrigger,
   useSidebar,
 };
+/* eslint-disable react-refresh/only-export-components */

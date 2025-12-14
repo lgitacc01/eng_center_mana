@@ -131,7 +131,7 @@ function FormMessage({ className, children, ...props }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+/* eslint-disable react-refresh/only-export-components */
 export {
   useFormField,
   Form,
@@ -142,3 +142,4 @@ export {
   FormMessage,
   FormField,
 };
+/* eslint-disable react-refresh/only-export-components */

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import api from '../../api/apiConfig';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -17,7 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 export default function AdminStudents() {
   const [students, setStudents] = useState([]);
-  const [setLoading] = useState([]);
+  const [, setLoading] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -40,7 +40,7 @@ export default function AdminStudents() {
   });
 
   // --- 1. LẤY DỮ LIỆU TỪ API ---
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [studentsRes, classesRes] = await Promise.all([
@@ -81,11 +81,11 @@ export default function AdminStudents() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   // --- 2. THÊM HỌC SINH MỚI ---
   const handleAddStudent = async () => {

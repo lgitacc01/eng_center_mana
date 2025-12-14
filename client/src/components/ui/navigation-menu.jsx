@@ -153,7 +153,7 @@ function NavigationMenuIndicator({
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+/* eslint-disable react-refresh/only-export-components */
 export {
   NavigationMenu,
   NavigationMenuList,
@@ -165,3 +165,4 @@ export {
   NavigationMenuViewport,
   navigationMenuTriggerStyle,
 };
+/* eslint-disable react-refresh/only-export-components */

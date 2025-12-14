@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../api/apiConfig';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -18,7 +18,7 @@ import { Table, TableBody, TableHeader, TableHead, TableRow, TableCell } from '.
 export default function AdminClasses() {
   const [classes, setClasses] = useState([]);
   const [teachers, setTeachers] = useState([]); // State lưu danh sách giáo viên để chọn
-  const [setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function AdminClasses() {
   });
 
   // 1. FETCH DATA (LỚP & GIÁO VIÊN)
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       // Gọi song song 2 API để tiết kiệm thời gian
@@ -113,11 +113,11 @@ export default function AdminClasses() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   // 2. TẠO LỚP MỚI
   const handleCreateClass = async () => {
@@ -588,85 +588,92 @@ export default function AdminClasses() {
       </Card>
 
       {/* Classes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredClasses.map((cls) => (
-          <Card key={cls.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle>{cls.name}</CardTitle>
-                  <CardDescription className="mt-1">
-                    <Badge variant="secondary">{cls.level}</Badge>
-                  </CardDescription>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleEditClick(cls)}>
-                      <Edit className="w-4 h-4 mr-2" />
-                      Chỉnh sửa
-                    </DropdownMenuItem>
-
-                    {cls.status === 'inactive' ? (
-                      <DropdownMenuItem className="text-green-600 font-medium" onClick={() => handleReactivateClass(cls)}>
-                        <RotateCcw className="w-4 h-4 mr-2" /> 
-                        Mở lại lớp học
-                       </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteClass(cls.id)}>
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Dừng hoạt động
+      {loading ? (
+          <div className="flex justify-center items-center py-10">
+             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+             <span className="ml-2">Đang tải dữ liệu...</span>
+          </div>
+       ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredClasses.map((cls) => (
+            <Card key={cls.id} className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle>{cls.name}</CardTitle>
+                    <CardDescription className="mt-1">
+                      <Badge variant="secondary">{cls.level}</Badge>
+                    </CardDescription>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEditClick(cls)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Chỉnh sửa
                       </DropdownMenuItem>
-                    )}  
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Users className="w-4 h-4 text-muted-foreground" />
-                  <span>Giáo viên: {cls.teacherName}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
-                  <span>{cls.schedule}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <BookOpen className="w-4 h-4 text-muted-foreground" />
-                  <span>{cls.room}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <span>{new Date(cls.startDate).toLocaleDateString('vi-VN')} - {new Date(cls.endDate).toLocaleDateString('vi-VN')}</span>
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                {/* Đã gộp hai span lại thành một dòng duy nhất */}
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span className="font-medium">Sĩ số: {cls.studentsCount}/{cls.maxStudents}</span>
+                      {cls.status === 'inactive' ? (
+                        <DropdownMenuItem className="text-green-600 font-medium" onClick={() => handleReactivateClass(cls)}>
+                          <RotateCcw className="w-4 h-4 mr-2" /> 
+                          Mở lại lớp học
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteClass(cls.id)}>
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Dừng hoạt động
+                        </DropdownMenuItem>
+                      )}  
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-              {/* Progress bar giữ nguyên, thêm Math.min để tránh lỗi 100% nếu sĩ số quá tải */}
-                <Progress value={Math.min((cls.studentsCount / (cls.maxStudents || 1)) * 100, 100)} className="h-2" />
-              </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                    <span>Giáo viên: {cls.teacherName}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span>{cls.schedule}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <BookOpen className="w-4 h-4 text-muted-foreground" />
+                    <span>{cls.room}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span>{new Date(cls.startDate).toLocaleDateString('vi-VN')} - {new Date(cls.endDate).toLocaleDateString('vi-VN')}</span>
+                  </div>
+                </div>
 
-              <div className="flex items-center justify-between pt-2 border-t">
-                <Badge variant={getStatusColor(cls.status)}>
-                  {getStatusLabel(cls.status)}
-                </Badge>
-                <Button variant="outline" size="sm" onClick={() => handleViewDetail(cls.id)}>
-                  <Eye className="w-4 h-4 mr-2" /> Xem chi tiết
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <div className="space-y-2">
+                  {/* Đã gộp hai span lại thành một dòng duy nhất */}
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span className="font-medium">Sĩ số: {cls.studentsCount}/{cls.maxStudents}</span>
+                  </div>
+               {/* Progress bar giữ nguyên, thêm Math.min để tránh lỗi 100% nếu sĩ số quá tải */}
+                  <Progress value={Math.min((cls.studentsCount / (cls.maxStudents || 1)) * 100, 100)} className="h-2" />
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t">
+                  <Badge variant={getStatusColor(cls.status)}>
+                    {getStatusLabel(cls.status)}
+                  </Badge>
+                  <Button variant="outline" size="sm" onClick={() => handleViewDetail(cls.id)}>
+                    <Eye className="w-4 h-4 mr-2" /> Xem chi tiết
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+       )}
     </div>
   );
 }

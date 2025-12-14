@@ -61,7 +61,7 @@ export const submitAssignment = async (req, res) => {
 
         // Những câu này cần chấm tay
         case "short_answer":
-        case "essay":
+        case "essay": {
             // Gọi hàm AI chấm điểm
             const aiResult = await evaluateAnswerAI({
                 questionContent: question.content || question.question, // Tùy field trong DB của bạn
@@ -74,6 +74,7 @@ export const submitAssignment = async (req, res) => {
             // Coi là đúng nếu được > 50% số điểm (hoặc tùy logic bạn)
             isCorrect = points >= (question.points / 2);
             break;
+        }
         default:
             isCorrect = false;
             points = 0;

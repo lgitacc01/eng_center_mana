@@ -106,16 +106,15 @@ export function StudentAssignments() {
   };
 
   // 3. XỬ LÝ TIMER (ĐẾM NGƯỢC)
+  // Effect 1: Chỉ phụ trách việc đếm ngược thời gian
   useEffect(() => {
-    // Chỉ chạy timer khi Dialog mở, chưa có kết quả và có giới hạn thời gian
-    if (isQuizDialogOpen && !quizResult && timeLeft !== null && currentAssignment) {
+    // Chỉ chạy timer khi Dialog mở, chưa nộp bài và bài có giới hạn thời gian (timeLimit > 0)
+    // Lưu ý: ta check currentAssignment?.timeLimit thay vì check timeLeft để tránh phụ thuộc vào biến thay đổi liên tục
+    if (isQuizDialogOpen && !quizResult && currentAssignment?.timeLimit) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current);
-            handleAutoSubmit(); // Hết giờ tự nộp
-            return 0;
-          }
+          // Nếu về 0 hoặc thấp hơn thì giữ nguyên 0, logic nộp bài sẽ do Effect 2 xử lý
+          if (prev <= 0) return 0;
           return prev - 1;
         });
       }, 1000);
@@ -125,6 +124,18 @@ export function StudentAssignments() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [isQuizDialogOpen, quizResult, currentAssignment]);
+
+  // Effect 2: Chỉ phụ trách việc Tự Động Nộp khi hết giờ
+  useEffect(() => {
+    if (timeLeft === 0 && isQuizDialogOpen && !quizResult && currentAssignment?.timeLimit) {
+      // Dọn dẹp interval ngay lập tức để tránh leak
+      if (timerRef.current) clearInterval(timerRef.current);
+      
+      // Gọi hàm nộp bài
+      handleAutoSubmit();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft]); // Chỉ chạy khi thời gian thay đổi
 
   const formatTime = (seconds) => {
     if (seconds === null) return "Không giới hạn";

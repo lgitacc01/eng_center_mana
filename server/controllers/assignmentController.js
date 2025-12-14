@@ -166,9 +166,19 @@ export const getAssignmentById = async (req, res) => {
  */
 export const updateAssignment = async (req, res) => {
   try {
+    const data = req.body;
+
+    // SỬA: Nếu có cập nhật danh sách câu hỏi, phải tính lại tổng điểm
+    if (data.questions && Array.isArray(data.questions)) {
+      data.totalPoints = data.questions.reduce(
+        (sum, q) => sum + (parseInt(q.points) || 0), 
+        0
+      );
+    }
+
     const updated = await Assignment.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      data,
       { new: true }
     );
 

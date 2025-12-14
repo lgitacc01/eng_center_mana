@@ -21,8 +21,8 @@ const classSchema = new mongoose.Schema({
   
   status: { 
     type: String, 
-    enum: ['active', 'pending', 'completed', 'canceled', 'inactive'], default: 'pending', 
-    default: 'pending' 
+    enum: ['active', 'pending', 'completed', 'canceled', 'inactive'], 
+    default: 'pending'
   }
 }, { 
   timestamps: true 

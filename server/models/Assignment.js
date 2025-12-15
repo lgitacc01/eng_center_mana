@@ -47,7 +47,7 @@ const assignmentSchema = new mongoose.Schema(
       required: true,
     },
 
-    type: { type: String, enum: ["grammar", "vocabulary", "reading"], default: "mixed" }, // có thể thêm "listening", "speaking"
+    type: { type: String, enum: ["grammar", "vocabulary", "reading", "writing"], default: "mixed" }, // có thể thêm "listening", "speaking"
 
     dueDate: { type: Date },
     // dueTime: { type: String },

@@ -73,7 +73,26 @@ export const generateQuiz = async (req, res) => {
             ]
           }
         `;
-    } else {
+    } 
+    // TRƯỜNG HỢP 2: BÀI VIẾT HOẶC NÓI (TỰ LUẬN)
+    else if (type === 'writing' || type === 'speaking' || type === 'essay') {
+        formatInstruction = `
+          ĐÂY LÀ BÀI TẬP TỰ LUẬN (VIẾT).
+          Hãy tạo các đề bài (topic) hoặc câu hỏi mở. KHÔNG tạo trắc nghiệm.
+          
+          JSON Output (Array):
+          [
+            {
+              "question": "Đề bài chi tiết (Ví dụ: Write an essay about...)",
+              "type": "essay", 
+              "options": [], 
+              "correctAnswer": "Gợi ý dàn ý hoặc các ý chính cần có trong bài làm (để giáo viên tham khảo)",
+              "explanation": "Ghi chú thêm về từ vựng/ngữ pháp gợi ý"
+            }
+          ]
+        `;
+    }    
+    else {
         // Nếu là bài tập thường (Trắc nghiệm rời rạc): Chỉ cần mảng câu hỏi
         formatInstruction = `
           ĐÂY LÀ BÀI TẬP TRẮC NGHIỆM THÔNG THƯỜNG.

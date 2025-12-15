@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Progress } from "../../components/ui/progress";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle} from "../../components/ui/dialog";
 import { Textarea } from "../../components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Label } from "../../components/ui/label";
@@ -14,18 +14,11 @@ import {
   Calendar, 
   Clock, 
   Star,
-  Circle,
   CheckCircle,
-  AlertCircle,
-  AlertTriangle,
   XCircle,
   PlayCircle,
-  Upload,
-  FileText,
   Trophy,
   Brain,
-  Lightbulb,
-  Sparkles,
   Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -73,6 +66,66 @@ export function StudentAssignments() {
       setLoading(false);
     }
   };
+
+  const renderStudentAnswerInput = () => {
+  const q = quizQuestions[currentQuestionIndex];
+  if (!q) return null;
+
+  // TRƯỜNG HỢP 1: TỰ LUẬN / TRẢ LỜI NGẮN (Nhập văn bản)
+  if (q.type === 'essay' || q.type === 'short_answer') {
+    return (
+      <div className="space-y-3">
+        <Textarea
+          placeholder="Nhập câu trả lời của bạn tại đây..."
+          className="min-h-[200px] p-4 text-base leading-relaxed bg-slate-50 focus:bg-white transition-all"
+          value={userAnswers[q.id] || ""}
+          onChange={(e) => handleAnswerSelect(q.id, e.target.value)}
+        />
+        <p className="text-xs text-muted-foreground text-right">
+          Số ký tự: {(userAnswers[q.id] || "").length}
+        </p>
+      </div>
+    );
+  }
+
+  // TRƯỜNG HỢP 2: ĐIỀN TỪ (Input ngắn)
+  if (q.type === 'fill_blank') {
+     return (
+       <div className="space-y-3">
+          <Input 
+            placeholder="Nhập đáp án..."
+            className="text-lg py-6"
+            value={userAnswers[q.id] || ""}
+            onChange={(e) => handleAnswerSelect(q.id, e.target.value)}
+          />
+       </div>
+     )
+  }
+
+  // TRƯỜNG HỢP 3: TRẮC NGHIỆM / ĐÚNG SAI (Mặc định)
+  return (
+    <RadioGroup 
+        value={userAnswers[q.id] || ""}
+        onValueChange={(val) => handleAnswerSelect(q.id, val)}
+        className="space-y-3"
+    >
+        {q.options.map((opt, idx) => (
+            <div key={idx} 
+                onClick={() => handleAnswerSelect(q.id, opt)} // Cho phép click vào cả dòng
+                className={`flex items-center space-x-3 p-3 rounded-lg border transition-all cursor-pointer ${
+                userAnswers[q.id] === opt 
+                ? 'bg-purple-50 border-purple-500 ring-1 ring-purple-500' 
+                : 'bg-white hover:bg-gray-50 hover:border-gray-300'
+            }`}>
+                <RadioGroupItem value={opt} id={`opt-${idx}`} />
+                <Label htmlFor={`opt-${idx}`} className="flex-1 cursor-pointer text-base font-normal">
+                    {opt}
+                </Label>
+            </div>
+        ))}
+    </RadioGroup>
+  );
+};
 
   // 2. BẮT ĐẦU LÀM BÀI (START QUIZ)
   const startQuiz = async (assignment) => {
@@ -197,33 +250,6 @@ export function StudentAssignments() {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'overdue': return 'bg-red-100 text-red-800';
-      default: return 'bg-blue-100 text-blue-800'; 
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'completed': return 'Đã hoàn thành';
-      case 'overdue': return 'Quá hạn';
-      default: return 'Đang mở';
-    }
-  };
-
-  // const getStatusIcon = (status) => {
-  //   switch (status) {
-  //         case "completed":
-  //     return <CheckCircle className="w-4 h-4 text-green-500" />;
-  //   case "overdue":
-  //     return <AlertTriangle className="w-4 h-4 text-red-500" />;
-  //   default:
-  //     return <Circle className="w-4 h-4 text-gray-400" />;
-  //   }
-  // };
-
   const getTypeColor = (type) => {
     switch (type) {
       case 'grammar': return 'bg-blue-100 text-blue-800';
@@ -234,17 +260,35 @@ export function StudentAssignments() {
     }
   };
 
-  // const getTypeText = (type) => {
-  //   switch (type) {
-  //     case 'grammar': return '📚 Ngữ pháp';
-  //     case 'vocabulary': return '📝 Từ vựng';
-  //     // case 'speaking': return '🎤 Nói';
-  //     case 'reading': return '📖 Đọc';
-  //     default: return '📋 Khác';
-  //   }
-  // };
+  const isOverdue = (dueDate) => {
+    if (!dueDate) return false; // Không có hạn -> Không bao giờ quá hạn
+    return new Date(dueDate) < new Date();
+  };
 
-  const isOverdue = (dueDate) => new Date(dueDate) < new Date();
+  // Helper: Xác định trạng thái thực tế (Ưu tiên: Đã nộp > Quá hạn > Đang mở)
+  const getRealStatus = (assignment) => {
+    if (assignment.status === 'completed') return 'completed';
+    if (isOverdue(assignment.dueDate)) return 'overdue';
+    return 'active';
+  };
+
+  const getStatusColor = (assignment) => {
+    const realStatus = getRealStatus(assignment);
+    switch (realStatus) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'overdue': return 'bg-red-100 text-red-800';
+      default: return 'bg-blue-100 text-blue-800'; 
+    }
+  };
+
+  const getStatusText = (assignment) => {
+    const realStatus = getRealStatus(assignment);
+    switch (realStatus) {
+      case 'completed': return 'Đã hoàn thành';
+      case 'overdue': return 'Quá hạn';
+      default: return 'Đang mở';
+    }
+  };
 
   const getTimeRemaining = (dueDate) => {
     if (!dueDate) return "Không thời hạn";
@@ -285,8 +329,18 @@ export function StudentAssignments() {
         </TabsList>
 
         <TabsContent value={activeTab} className="space-y-4">
-          {filteredAssignments.map((assignment) => (
+          {filteredAssignments.map((assignment) => {
+            const realStatus = getRealStatus(assignment);
+            const isLocked = realStatus === 'overdue';
+
+            return (
             <Card key={assignment._id} className="hover:shadow-md transition-shadow">
+              {/* Thêm border màu bên trái để dễ phân biệt */}
+              <div className={`absolute left-0 top-0 bottom-0 w-1 ${
+                realStatus === 'completed' ? 'bg-green-500' : 
+                realStatus === 'overdue' ? 'bg-red-500' : 'bg-blue-500'
+              }`} />
+
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -299,8 +353,8 @@ export function StudentAssignments() {
                     </CardDescription>
                   </div>
                   <div className="flex flex-col gap-2 items-end">
-                    <Badge className={getStatusColor(assignment.status)}>
-                      {getStatusText(assignment.status)}
+                    <Badge className={getStatusColor(assignment)}>
+                      {getStatusText(assignment)}
                     </Badge>
                   </div>
                 </div>
@@ -314,11 +368,13 @@ export function StudentAssignments() {
                     <Badge variant="outline"><Clock className="w-3 h-3 mr-1"/> {assignment.timeLimit ? assignment.timeLimit + ' phút' : 'Không giới hạn'}</Badge>
                     <Badge variant="outline"><Star className="w-3 h-3 mr-1"/> {assignment.totalPoints} điểm</Badge>
                 </div>
+
+                
                 
                 <div className="flex items-center justify-between text-sm text-gray-500">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
-                      <span>Hạn nộp: {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString('vi-VN') : 'Không'}</span>
+                      <span>Hạn nộp: {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString('vi-VN', { hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'}) : 'Không'}</span>
                     </div>
                     <span className={`font-medium ${isOverdue(assignment.dueDate) ? 'text-red-600' : 'text-green-600'}`}>
                       {getTimeRemaining(assignment.dueDate)}
@@ -326,15 +382,25 @@ export function StudentAssignments() {
                 </div>
 
                 <Button 
-                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    className={`w-full ${
+                      realStatus === 'completed' ? 'bg-green-600 hover:bg-green-700' :
+                      isLocked ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'
+                    }`}
                     onClick={() => startQuiz(assignment)}
-                >
-                    <PlayCircle className="w-4 h-4 mr-2" />
-                    Làm bài ngay
+                    disabled={isLocked || realStatus === 'completed'} // Chặn click nếu quá hạn hoặc đã làm xong
+                    >
+                    {realStatus === 'completed' ? (
+                      <><CheckCircle className="w-4 h-4 mr-2" /> Đã hoàn thành</>
+                    ) : isLocked ? (
+                      <><XCircle className="w-4 h-4 mr-2" /> Đã hết hạn làm bài</>
+                    ) : (
+                      <><PlayCircle className="w-4 h-4 mr-2" /> Làm bài ngay</>
+                    )}
                 </Button>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </TabsContent>
       </Tabs>
 
@@ -348,7 +414,7 @@ export function StudentAssignments() {
             setIsQuizDialogOpen(open);
          }
       }}>
-        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
+        <DialogContent className="min-w-6xl w-[90vw] h-[85vh] flex flex-col p-6 overflow-hidden">
           <DialogHeader>
             <div className="flex justify-between items-center mr-6">
                 <div>
@@ -367,93 +433,81 @@ export function StudentAssignments() {
 
           {/* TRẠNG THÁI 1: ĐANG LÀM BÀI */}
           {!quizResult && currentAssignment ? (
-            <div className="flex flex-col h-full">
-                {/* Progress bar */}
-                <div className="mb-4">
-                     <div className="flex justify-between text-sm mb-1">
-                        <span>Câu {currentQuestionIndex + 1}/{quizQuestions.length}</span>
-                        <span>Đã chọn: {Object.keys(userAnswers).length} câu</span>
-                    </div>
-                    <Progress value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} className="h-2" />
-                </div>
+  <div className="flex flex-col h-full overflow-hidden">
+    {/* Progress bar */}
+    <div className="mb-4 shrink-0">
+      <div className="flex justify-between text-sm mb-1">
+        <span>Câu {currentQuestionIndex + 1}/{quizQuestions.length}</span>
+        <span>Đã chọn: {Object.keys(userAnswers).length} câu</span>
+      </div>
+      <Progress value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} className="h-2" />
+    </div>
 
-                {/* Bố cục chia 2 cột nếu là bài Reading */}
-                <div className={`grid gap-6 ${currentAssignment.reading_passage ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
-                    
-                    {/* Cột Trái: Bài đọc (Chỉ hiện nếu có reading_passage) */}
-                    {currentAssignment.reading_passage && (
-                        <div className="p-4 bg-slate-50 border rounded-lg h-fit max-h-[60vh] overflow-y-auto shadow-inner">
-                            <h4 className="font-bold text-gray-700 mb-3 flex items-center gap-2 sticky top-0 bg-slate-50 pb-2 border-b">
-                                <BookOpen className="w-5 h-5 text-purple-600"/> Reading Passage
-                            </h4>
-                            <p className="text-gray-700 whitespace-pre-line leading-relaxed text-justify font-serif text-lg">
-                                {currentAssignment.reading_passage}
-                            </p>
-                        </div>
-                    )}
+    {/* Bố cục chia 2 cột - FIXED HEIGHT */}
+    <div className={`grid gap-6 flex-1 overflow-hidden ${currentAssignment.reading_passage ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
+      
+      {/* Cột Trái: Bài đọc - FIXED HEIGHT */}
+      {currentAssignment.reading_passage && (
+        <div className="flex flex-col h-full overflow-hidden bg-slate-50 border rounded-lg shadow-inner">
+          <h4 className="font-bold text-gray-700 px-4 py-3 flex items-center gap-2 bg-slate-50 border-b shrink-0">
+            <BookOpen className="w-5 h-5 text-purple-600"/> Reading Passage
+          </h4>
+          <div className="flex-1 overflow-y-auto px-4 py-3">
+            <p className="text-gray-700 whitespace-pre-line leading-relaxed text-justify font-serif text-lg">
+              {currentAssignment.reading_passage}
+            </p>
+          </div>
+        </div>
+      )}
 
-                    {/* Cột Phải: Câu hỏi */}
-                    <div className="flex flex-col">
-                        <div className="p-5 bg-white border rounded-xl shadow-sm min-h-[300px]">
-                            <h3 className="text-lg font-medium mb-6 leading-relaxed">
-                                <span className="font-bold text-purple-600 mr-2 bg-purple-50 px-2 py-1 rounded">
-                                    Câu {currentQuestionIndex + 1}
-                                </span>
-                                {quizQuestions[currentQuestionIndex]?.question}
-                            </h3>
+      {/* Cột Phải: Câu hỏi - FIXED HEIGHT với nút cố định */}
+      <div className="flex flex-col h-full overflow-hidden">
+        {/* Phần câu hỏi - có scroll */}
+        <div className="flex-1 overflow-y-auto bg-white border rounded-xl shadow-sm">
+          <div className="p-5">
+            <h3 className="text-lg font-medium mb-6 leading-relaxed">
+              <span className="font-bold text-purple-600 mr-2 bg-purple-50 px-2 py-1 rounded">
+                Câu {currentQuestionIndex + 1}
+              </span>
+              {quizQuestions[currentQuestionIndex]?.question}
+            </h3>
 
-                            <RadioGroup 
-                                value={userAnswers[quizQuestions[currentQuestionIndex]?.id] || ""}
-                                onValueChange={(val) => handleAnswerSelect(quizQuestions[currentQuestionIndex]?.id, val)}
-                                className="space-y-3"
-                            >
-                                {quizQuestions[currentQuestionIndex]?.options.map((opt, idx) => (
-                                    <div key={idx} 
-                                        onClick={() => handleAnswerSelect(quizQuestions[currentQuestionIndex]?._id, opt)}
-                                        className={`flex items-center space-x-3 p-3 rounded-lg border transition-all cursor-pointer ${
-                                        userAnswers[quizQuestions[currentQuestionIndex]?._id] === opt 
-                                        ? 'bg-purple-50 border-purple-500 ring-1 ring-purple-500' 
-                                        : 'bg-white hover:bg-gray-50 hover:border-gray-300'
-                                    }`}>
-                                        <RadioGroupItem value={opt} id={`opt-${idx}`} />
-                                        <Label htmlFor={`opt-${idx}`} className="flex-1 cursor-pointer text-base font-normal">
-                                            {opt}
-                                        </Label>
-                                    </div>
-                                ))}
-                            </RadioGroup>
-                        </div>
+            {renderStudentAnswerInput()}
+          </div>
+        </div>
 
-                        {/* Điều hướng */}
-                        <div className="flex justify-between mt-6">
-                            <Button 
-                                variant="outline"
-                                onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
-                                disabled={currentQuestionIndex === 0}
-                            >
-                                Quay lại
-                            </Button>
+        {/* Điều hướng - CỐ ĐỊNH Ở DƯỚI */}
+        <div className="flex justify-between mt-4 shrink-0">
+          <Button 
+            variant="outline"
+            onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
+            disabled={currentQuestionIndex === 0}
+            className="px-6"
+          >
+            Quay lại
+          </Button>
 
-                            {currentQuestionIndex < quizQuestions.length - 1 ? (
-                                <Button 
-                                    onClick={() => setCurrentQuestionIndex(prev => Math.min(quizQuestions.length - 1, prev + 1))}
-                                >
-                                    Câu tiếp theo
-                                </Button>
-                            ) : (
-                                <Button 
-                                    className="bg-green-600 hover:bg-green-700 text-white min-w-[150px]"
-                                    onClick={submitQuiz}
-                                    disabled={isSubmitting}
-                                >
-                                    {isSubmitting ? <Loader2 className="animate-spin" /> : <><CheckCircle className="w-4 h-4 mr-2"/> Nộp bài</>}
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-          ) : null}
+          {currentQuestionIndex < quizQuestions.length - 1 ? (
+            <Button 
+              onClick={() => setCurrentQuestionIndex(prev => Math.min(quizQuestions.length - 1, prev + 1))}
+              className="px-6"
+            >
+              Câu tiếp theo
+            </Button>
+          ) : (
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white min-w-[150px]"
+              onClick={submitQuiz}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? <Loader2 className="animate-spin" /> : <><CheckCircle className="w-4 h-4 mr-2"/> Nộp bài</>}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+) : null}
 
           {/* TRẠNG THÁI 2: ĐÃ CÓ KẾT QUẢ */}
           {quizResult && (

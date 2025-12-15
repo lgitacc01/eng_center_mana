@@ -33,7 +33,6 @@ import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import { toast } from "sonner";
 import {
   Plus,
-  // Upload,
   Brain,
   Sparkles,
   Save,
@@ -45,19 +44,13 @@ import {
   BookOpen
 } from "lucide-react";
 
-/**
- * CreateAssignment
- * - classesList: array of real class names (provided by parent)
- * - initialData: optional assignment data for editing
- *
- * Lưu ý: component đã loại bỏ dữ liệu lớp giả và một số phần UI không cần thiết.
- */
 export default function CreateAssignment({
   isOpen,
   onClose,
   onSave,
   initialData = {},
-  classesList = []
+  classesList = [],
+  isEditing = false
 }) {
   // currentStep: 0..3
   const [currentStep, setCurrentStep] = useState(0);
@@ -83,8 +76,55 @@ export default function CreateAssignment({
     questions: [],
     instructions: "",
     materials: "",
-    ...initialData,
+    ...initialData
   });
+
+  // 2. THÊM USEEFFECT ĐỂ RESET FORM KHI initialData THAY ĐỔI
+  React.useEffect(() => {
+      if (isOpen) {
+        setCurrentStep(0);
+          if (isEditing && initialData) {
+              // Format lại ngày giờ từ ISO string nếu cần
+              // Ví dụ: tách 2025-12-15T14:30 thành ngày và giờ riêng
+              let formattedDate = "";
+              let formattedTime = "";
+              if(initialData.dueDate) {
+                  const dateObj = new Date(initialData.dueDate);
+                  formattedDate = dateObj.toISOString().split('T')[0];
+                  // Lấy giờ phút HH:MM
+                  formattedTime = dateObj.toTimeString().slice(0, 5);
+              }
+
+              setAssignment({
+                  ...initialData,
+                  dueDate: formattedDate,
+                  dueTime: formattedTime,
+                  class_id: initialData.class_id?._id || initialData.class_id, // Xử lý nếu class_id là object hay string
+                  questions: initialData.questions || []
+              });
+          } else {
+              // Reset về rỗng nếu là Tạo mới
+              setAssignment({
+                  title: "",
+                  description: "",
+                  className: "",
+                  type: "", 
+                  reading_passage: "",
+                  dueDate: "",
+                  dueTime: "",
+                  totalPoints: "",
+                  timeLimit: "",
+                  attempts: 1,
+                  randomizeQuestions: false,
+                  showResults: false,
+                  allowLateSubmission: false,
+                  questions: [],
+                  instructions: "",
+                  materials: "",
+              });
+          }
+      }
+  }, [isOpen, initialData, isEditing]);
 
   const [currentQuestion, setCurrentQuestion] = useState({
     id: "",
@@ -92,7 +132,7 @@ export default function CreateAssignment({
     question: "",
     options: ["", "", "", ""],
     correctAnswer: "",
-    points: 10,
+    points: 1,
     difficulty: "medium",
     explanation: "",
   });
@@ -157,7 +197,7 @@ export default function CreateAssignment({
       question: "",
       options: ["", "", "", ""],
       correctAnswer: "",
-      points: 10,
+      points: 1,
       difficulty: "medium",
       explanation: "",
     });
@@ -202,10 +242,14 @@ export default function CreateAssignment({
 
     setAiLoading(true); // Bắt đầu quay
     try {
+
+      const countRequest = (assignment.type === 'writing' || assignment.type === 'speaking') 
+                         ? 1 
+                         : (Number(aiCount) || 5);
       // 2. Gọi API
       const res = await api.post('/ai/generate-quiz', {
         content: aiContent,
-        number: Number(aiCount) || 5,
+        number: countRequest,
         type: assignment.type // Quan trọng: Gửi loại bài để BE xử lý
       });
 
@@ -243,6 +287,10 @@ export default function CreateAssignment({
       // 4. Map dữ liệu & Fix lỗi đáp án A/B/C
       const newQuestions = newQuestionsRaw.map((q, index) => {
         let finalCorrectAnswer = q.correctAnswer;
+
+        if (Array.isArray(finalCorrectAnswer)) {
+            finalCorrectAnswer = finalCorrectAnswer.join('\n\n'); // Gộp các dòng lại, cách nhau bởi xuống dòng
+        }
         
         // Tự động chuyển đổi đáp án A, B, C... thành nội dung text
         if (q.correctAnswer && q.correctAnswer.length === 1 && q.options?.length > 0) {
@@ -259,7 +307,7 @@ export default function CreateAssignment({
           question: q.question || "",
           options: q.options || [],
           correctAnswer: finalCorrectAnswer,
-          points: q.points || 10,
+          points: 1,
           difficulty: q.difficulty || "medium",
           explanation: q.explanation || ""
         };
@@ -289,10 +337,7 @@ export default function CreateAssignment({
   };
 
   const calculateTotalPoints = () => {
-    return assignment.questions.reduce((total, q) => {
-      const pts = parseInt(q.points || 0, 10);
-      return total + (Number.isNaN(pts) ? 0 : pts);
-    }, 0);
+    return assignment.questions.length > 0 ? 10 : 0;
   };
 
   const handleSave = () => {
@@ -764,7 +809,7 @@ export default function CreateAssignment({
                               <Badge variant="outline">
                                 {questionTypes.find(t => t.value === question.type)?.icon} {questionTypes.find(t => t.value === question.type)?.label}
                               </Badge>
-                              <Badge variant="secondary">{question.points} điểm</Badge>
+                              <Badge variant="secondary">{(10 / assignment.questions.length).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} điểm</Badge>
                               <Badge>
                                 {question.difficulty === "easy" ? "Dễ" : question.difficulty === "medium" ? "Trung bình" : "Khó"}
                               </Badge>
@@ -899,13 +944,9 @@ export default function CreateAssignment({
 
                 <div className="space-y-2">
                   <Label>Điểm số</Label>
-                  <Input
-                    type="number"
-                    value={currentQuestion.points}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, points: parseInt(e.target.value) || 10 })}
-                    min="1"
-                    max="100"
-                  />
+                  <div className="p-2 bg-gray-100 rounded text-sm text-gray-600">
+                    Tự động (10 điểm / {assignment.questions.length + (isEditingQuestion ? 0 : 1)} câu)
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -973,6 +1014,7 @@ export default function CreateAssignment({
                 />
               </div>
               <div className="flex gap-4">
+                {assignment.type !== 'writing' && (
                 <div className="flex-1 space-y-2">
                   <Label>Số lượng câu</Label>
                   <Input
@@ -980,6 +1022,7 @@ export default function CreateAssignment({
                     onChange={(e) => setAiCount(Number(e.target.value))}
                   />
                 </div>
+                )}
               </div>
             </div>
 
@@ -1021,7 +1064,7 @@ export default function CreateAssignment({
                 className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
               >
                 <Save className="w-4 h-4" />
-                Tạo bài tập
+                {isEditing ? "Cập nhật bài tập" : "Tạo bài tập"}
               </Button>
             )}
           </div>

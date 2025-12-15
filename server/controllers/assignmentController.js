@@ -13,8 +13,7 @@ export const createAssignment = async (req, res) => {
 
     // Auto tính tổng điểm
     if (!data.totalPoints) {
-      data.totalPoints = (data.questions || [])
-        .reduce((sum, q) => sum + (parseInt(q.points) || 0), 0);
+      data.totalPoints = (data.questions && data.questions.length > 0) ? 10 : 0;
     }
 
     let assignment = await Assignment.create({
@@ -170,17 +169,17 @@ export const updateAssignment = async (req, res) => {
 
     // SỬA: Nếu có cập nhật danh sách câu hỏi, phải tính lại tổng điểm
     if (data.questions && Array.isArray(data.questions)) {
-      data.totalPoints = data.questions.reduce(
-        (sum, q) => sum + (parseInt(q.points) || 0), 
-        0
-      );
+       data.totalPoints = data.questions.length > 0 ? 10 : 0;
+       
+       // Tiện tay chuẩn hóa điểm từng câu về 1 luôn để data sạch (Optional)
+       data.questions = data.questions.map(q => ({ ...q, points: 1 }));
     }
 
     const updated = await Assignment.findByIdAndUpdate(
       req.params.id,
       data,
       { new: true }
-    );
+    ).populate("class_id", "name code");
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Không tìm thấy bài tập" });

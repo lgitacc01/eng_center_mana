@@ -9,22 +9,22 @@ import { Badge } from "../../components/ui/badge";
 import {
   Tabs, TabsContent, TabsList, TabsTrigger
 } from "../../components/ui/tabs";
-import { Progress } from "../../components/ui/progress";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "../../components/ui/select";
 import CreateAssignment from './CreateAssignment';
 import { toast } from "sonner";
 import {
-  Plus, FileText, Calendar, Users, Clock,
-  CheckCircle, BookOpen, Edit, Eye,
-  Search, SortDesc, Loader2
+  Plus, FileText, Calendar, Clock,
+  BookOpen, Edit, Eye,
+  Search, SortDesc, Loader2, Tag
 } from 'lucide-react';
 
 export default function TeacherAssignments() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingAssignment, setEditingAssignment] = useState(null);
 
   // State bộ lọc
   const [searchTerm, setSearchTerm] = useState("");
@@ -71,22 +71,43 @@ export default function TeacherAssignments() {
     }
   };
 
-  // 2. Hàm xử lý Tạo bài tập (Kết nối API Backend)
-  const handleCreateAssignment = async (data) => {
+  // 2. SAVE (CREATE HOẶC UPDATE)
+  const handleSaveAssignment = async (data) => {
     try {
-      // Gửi data sang Backend (assignmentController.createAssignment)
-      const res = await api.post('/assignments', data);
-
-      if (res.data.success) {
-        toast.success("Tạo bài tập thành công!");
-        // Cập nhật lại list mà không cần reload
-        setAssignments(prev => [res.data.assignment, ...prev]);
-        setIsCreateDialogOpen(false);
+      if (editingAssignment) {
+        // --- LOGIC CẬP NHẬT (UPDATE) ---
+        // Gọi API PUT /assignments/:id
+        const res = await api.put(`/assignments/${editingAssignment._id}`, data);
+        
+        if (res.data.success) {
+          toast.success("Cập nhật bài tập thành công!");
+          // Cập nhật lại danh sách state
+          setAssignments(prev => prev.map(item => 
+            item._id === editingAssignment._id ? res.data.assignment : item
+          ));
+        }
+      } else {
+        // Gửi data sang Backend (assignmentController.createAssignment)
+        const res = await api.post('/assignments', data);
+        if (res.data.success) {
+          toast.success("Tạo bài tập thành công!");
+          // Cập nhật lại list mà không cần reload
+          setAssignments(prev => [res.data.assignment, ...prev]);
+        }
       }
+      setIsCreateDialogOpen(false);
+      setEditingAssignment(null);
+
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Lỗi khi tạo bài tập");
     }
+  };
+
+  // HÀM MỞ DIALOG Ở CHẾ ĐỘ SỬA
+  const openEditDialog = (assignment) => {
+    setEditingAssignment(assignment); // Lưu bài đang chọn
+    setIsCreateDialogOpen(true);      // Mở dialog (CreateAssignment)
   };
 
 
@@ -108,6 +129,20 @@ export default function TeacherAssignments() {
       case 'completed': return 'Đã hoàn thành';
       default: return 'Không xác định';
     }
+  };
+
+  // Helper: Lấy nhãn loại bài tập
+  const getAssignmentTypeLabel = (type) => {
+    const types = {
+      grammar: "Ngữ pháp",
+      vocabulary: "Từ vựng",
+      speaking: "Nói",
+      reading: "Đọc hiểu",
+      writing: "Viết",
+      listening: "Nghe",
+      mixed: "Tổng hợp"
+    };
+    return types[type] || "Bài tập chung";
   };
 
   //  FILTERED LIST
@@ -250,8 +285,8 @@ export default function TeacherAssignments() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4" />
-                      {a.totalPoints} điểm
+                      <Tag className="w-4 h-4" />
+                      {getAssignmentTypeLabel(a.type)}
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-600">
@@ -261,7 +296,7 @@ export default function TeacherAssignments() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => openEditDialog(a)}>
                       <Edit className="w-4 h-4 mr-2" /> Chỉnh sửa
                     </Button>
                     <Button variant="outline" size="sm" className="flex-1">
@@ -296,9 +331,14 @@ export default function TeacherAssignments() {
       {/* Create Assignment Modal */}
       <CreateAssignment
         isOpen={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
-        onSave={handleCreateAssignment}
+        onClose={() => {
+            setIsCreateDialogOpen(false);
+            setEditingAssignment(null); // Reset khi đóng
+        }}
+        onSave={handleSaveAssignment}
         classesList={classesList}
+        initialData={editingAssignment || {}} // Truyền dữ liệu bài cũ vào
+        isEditing={!!editingAssignment} // Cờ báo hiệu đang là chế độ sửa
       />
     </div>
   );

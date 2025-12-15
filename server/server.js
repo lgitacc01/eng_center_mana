@@ -10,6 +10,7 @@ import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import dataRoutes from "./routes/dataRoutes.js";
 import verifyToken from "./middleware/verifyToken.js";
+import checkRole from "./middleware/checkRole.js";
 
 dotenv.config();
   
@@ -30,7 +31,7 @@ app.get("/", (req, res) => {
 
 
 // Route /users (của bạn)
-app.use("/users", verifyToken, userRoutes);
+app.use("/users", verifyToken, checkRole, userRoutes);
 
 // Routes xác thực (Auth)
 // Endpoint: /auth/login, /auth/register

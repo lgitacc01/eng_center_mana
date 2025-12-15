@@ -22,7 +22,11 @@ export const submitAssignment = async (req, res) => {
       questionMap[q.id] = q;
     });
 
-    let totalScore = 0;
+    //LOGIC TÍNH ĐIỂM THANG 10
+    const totalQuestions = assignment.questions.length;
+    const pointPerQuestion = totalQuestions > 0 ? (10 / totalQuestions) : 0;
+    
+    let correctCount = 0;
     const gradedAnswers = [];
 
     for (const ans of answers) {
@@ -34,20 +38,22 @@ export const submitAssignment = async (req, res) => {
           answer: ans.answer,
           isCorrect: false,
           pointsAwarded: 0,
+          feedback: "Câu hỏi không còn tồn tại"
         });
         continue;
       }
 
       let isCorrect = false;
-      let points = 0;
       let feedback = "";
+      
+      // Biến tạm để lưu điểm AI trả về
+      let aiRawPoints = 0; 
 
       switch (question.type) {
         case "multiple_choice":
         case "true_false":
           if (String(ans.answer).trim() === String(question.correctAnswer).trim()) {
             isCorrect = true;
-            points = question.points;
           }
           break;
 
@@ -55,42 +61,50 @@ export const submitAssignment = async (req, res) => {
           if (String(ans.answer).trim().toLowerCase() ===
               String(question.correctAnswer).trim().toLowerCase()) {
             isCorrect = true;
-            points = question.points;
           }
           break;
 
-        // Những câu này cần chấm tay
         case "short_answer":
         case "essay": {
-            // Gọi hàm AI chấm điểm
+            // Gọi AI chấm
             const aiResult = await evaluateAnswerAI({
-                questionContent: question.content || question.question, // Tùy field trong DB của bạn
+                questionContent: question.content || question.question,
                 correctAnswer: question.correctAnswer,
                 studentAnswer: ans.answer,
                 maxPoints: question.points
             });
-            points = aiResult.points;
+            
+            aiRawPoints = aiResult.points;
             feedback = aiResult.feedback;
-            // Coi là đúng nếu được > 50% số điểm (hoặc tùy logic bạn)
-            isCorrect = points >= (question.points / 2);
+            
+            // Logic xét đúng sai cho tự luận:
+            // Nếu AI chấm > 50% số điểm gốc của câu đó thì tính là ĐÚNG
+            if (aiRawPoints >= (question.points / 2)) {
+                isCorrect = true;
+            }
             break;
         }
         default:
             isCorrect = false;
-            points = 0;
             break;
       }
 
-      totalScore += points;
+      // Nếu đúng thì tăng biến đếm
+      if (isCorrect) {
+        correctCount++;
+      }
 
       gradedAnswers.push({
         questionId: ans.questionId,
         answer: ans.answer,
         isCorrect,
-        pointsAwarded: points,
-        feedback // Lưu feedback vào DB
+        // Lưu điểm của câu này
+        pointsAwarded: isCorrect ? pointPerQuestion : 0, 
+        feedback
       });
     }
+    // Làm tròn 2 chữ số thập phân
+    const totalScore = parseFloat((correctCount * pointPerQuestion).toFixed(2));
 
     const submission = await Submission.findOneAndUpdate(
       { 
@@ -102,12 +116,12 @@ export const submitAssignment = async (req, res) => {
           answers: gradedAnswers,
           score: totalScore,
           timeSpent: timeSpent || 0,
-          submittedAt: new Date() // Cập nhật lại thời gian nộp
+          submittedAt: new Date()
         }
       },
       { 
-        new: true,   // Trả về dữ liệu mới sau khi update
-        upsert: true, // Nếu chưa có thì tạo mới, có rồi thì update
+        new: true,
+        upsert: true,
         setDefaultsOnInsert: true 
       }
     );

@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import api from '../../api/apiConfig';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
-import { Progress } from "../../components/ui/progress";
+// import { Button } from "../../components/ui/button";
+// import { Progress } from "../../components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { 
   BarChart, 
@@ -21,180 +22,71 @@ import {
 } from 'recharts';
 import { 
   Trophy, 
-  Star, 
+  // Star, 
   TrendingUp,
-  Award,
+  // Award,
   Target,
   Calendar,
   BookOpen,
   MessageSquare,
-  Lightbulb,
-  CheckCircle,
-  AlertCircle,
-  Brain
+  // Lightbulb,
+  // CheckCircle,
+  // AlertCircle,
+  Brain,
+  Loader2
 } from 'lucide-react';
 
 export function StudentGrades() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({
+    quizResults: [],
+    progressData: [],
+    subjectAverages: [],
+    stats: { averageScore: 0, totalQuizzes: 0, completionRate: 0, streak: 0 }
+  });
 
-  // Mock data - Điểm quiz
-  const quizResults = [
-    {
-      id: 1,
-      title: 'Unit 5: Past Simple Tense',
-      subject: 'Ngữ pháp',
-      date: '2024-10-28',
-      score: 8.5,
-      maxScore:'',
-      totalQuestions:'',
-      correctAnswers:'',
-      timeSpent: '25 phút',
-      difficulty: 'Dễ',
-      aiFeedback: 'Bé làm rất tốt! Đặc biệt xuất sắc ở phần chia động từ. Cần ôn thêm về dạng phủ định.',
-      aiSuggestions: [
-        'Ôn lại phần câu phủ định với "didn\'t"',
-        'Làm thêm bài tập về trạng từ chỉ thời gian',
-        'Đọc truyện tiếng Anh để làm quen với thì quá khứ'
-      ],
-      topicScores: [
-        'Câu khẳng định',
-        'Câu phủ định',
-        'Câu nghi vấn',
-        'Trạng từ',
-      ],
-    },  
-    {
-      id: 2,
-      title: 'Vocabulary Quiz - Animals',
-      subject: 'Từ vựng',
-      date: '2024-10-26',
-      score: 9.0,
-      maxScore:'',
-      totalQuestions:'',
-      correctAnswers:'',
-      timeSpent: '20 phút',
-      difficulty: 'Trung bình',
-      aiFeedback: 'Tuyệt vời! Bé nhớ từ rất tốt và biết cách sử dụng từ đúng ngữ cảnh.',
-      aiSuggestions: [
-        'Học thêm từ vựng về động vật hoang dã',
-        'Luyện phát âm với các từ khó',
-        'Tạo câu chuyện với các từ vừa học'
-      ],
-      topicScores: [
-        'Động vật nhà',
-        'Động vật hoang dã',
-        'Côn trùng',
-        'Chim',
-      ]
-    }, 
-    {
-      id: 3,
-      title: 'Reading Comprehension - My Family',
-      subject: 'Đọc hiểu',
-      date: '2024-10-24',
-      score: 7.5,
-      maxScore:'',
-      totalQuestions:"",
-      correctAnswers:'',
-      timeSpent: '30 phút',
-      difficulty: 'Trung bình',
-      aiFeedback: 'Bé đọc hiểu tốt nhưng cần chú ý đến các từ nối trong câu để hiểu ý chính.',
-      aiSuggestions: [
-        'Đọc thêm các đoạn văn ngắn về gia đình',
-        'Học từ vựng về mối quan hệ gia đình',
-        'Luyện tìm ý chính của đoạn văn'
-      ],
-      topicScores: [
-        'Chi tiết',
-        'Ý chính',
-        'Suy luận',
-        'Từ vựng',
-      ],
-    },
-    {
-      id:4,
-      title: 'Listening Test - Daily Routines',
-      subject: 'Nghe',
-      date: '2024-10-22',
-      score: 8.0,
-      maxScore:'',
-      totalQuestions:'',
-      correctAnswers:'',
-      timeSpent: '35 phút',
-      difficulty: 'Khó',
-      aiFeedback: 'Bé nghe khá tốt! Cần luyện nghe các từ phát âm nhanh hơn.',
-      aiSuggestions: [
-        'Nghe podcast tiếng Anh cho trẻ em',
-        'Luyện nghe và lặp lại câu',
-        'Xem phim hoạt hình tiếng Anh có phụ đề'
-      ],
-      topicScores: [
-        'Chi tiết',
-        'Ý chính',
-        'Phát âm',
-        'Từ vựng'
-      ]
-    }
-  ]   
+  useEffect(() => {
+    const fetchReport = async () => {
+      try {
+        const res = await api.get('/api/grades/my-grades')
+        if (res.data.success) {
+          setData(res.data);
+        }
+      } catch (error) {
+        console.error("Lỗi lấy báo cáo:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReport();
+  }, []);
 
-  // Biểu đồ tiến độ theo thời gian
-  const progressData = [
-    { month: 'T8', score: 7.2 },
-    { month: 'T9', score: 7.8 },
-    { month: 'T10', score: 8.3 },
-    { month: 'T11', score: 8.3 }
-  ];
+  const { quizResults, progressData, subjectAverages, stats } = data;
 
-  // Điểm trung bình theo môn
-  const subjectAverages = [
-    { subject: 'Ngữ pháp', score: 8.5, total:''},
-    { subject: 'Từ vựng', score: 9.0, total:''},
-    { subject: 'Đọc hiểu', score: 7.5, total:''},
-    { subject: 'Nghe', score: 8.0, total:''},
-    { subject: 'Nói', score: 8.2, total:''}
-    ];    
-
-  // Phân bố điểm
+  // Tính toán phân bố điểm số từ dữ liệu thật
   const scoreDistribution = [
-    { name: '9-10 điểm', value:'', color: '#22c55e' },
-    { name: '8-9 điểm', value:'', color: '#3b82f6' },
-    { name: '7-8 điểm', value:'', color: '#f59e0b' },
-    { name: '<7 điểm', value:'', color: '#ef4444' }
-  ];
+    { name: '9-10 điểm', value: quizResults.filter(q => q.score >= 9).length, color: '#22c55e' },
+    { name: '8-9 điểm', value: quizResults.filter(q => q.score >= 8 && q.score < 9).length, color: '#3b82f6' },
+    { name: '7-8 điểm', value: quizResults.filter(q => q.score >= 7 && q.score < 8).length, color: '#f59e0b' },
+    { name: '< 7 điểm', value: quizResults.filter(q => q.score < 7).length, color: '#ef4444' }
+  ].filter(item => item.value > 0); // Chỉ hiện phần nào có dữ liệu
 
-  // Thống kê tổng quan
-  const stats = {
-    averageScore: 8.25,
-    totalQuizzes:'',
-    completionRate:'',
-    currentRank:'',
-    totalStudents:'',
-    streak:'',
-    badges:''
-  }  
-
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case 'Dễ': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Trung bình': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Khó': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+  const getScoreBadge = (score) => {
+    if (score >= 9) return { emoji: '🌟', text: 'Xuất sắc!', color: 'bg-green-100 text-green-800' };
+    if (score >= 8) return { emoji: '🎉', text: 'Tốt!', color: 'bg-blue-100 text-blue-800' };
+    if (score >= 6.5) return { emoji: '👍', text: 'Khá!', color: 'bg-yellow-100 text-yellow-800' };
+    return { emoji: '💪', text: 'Cố gắng!', color: 'bg-orange-100 text-orange-800' };
   };
 
   const getScoreColor = (score) => {
     if (score >= 9) return 'text-green-600';
     if (score >= 8) return 'text-blue-600';
-    if (score >= 7) return 'text-yellow-600';
+    if (score >= 6.5) return 'text-yellow-600';
     return 'text-red-600';
   };
 
-  const getScoreBadge = (score) => {
-    if (score >= 9) return { emoji: '🌟', text: 'Xuất sắc!', color: 'bg-green-100 text-green-800' };
-    if (score >= 8) return { emoji: '🎉', text: 'Tốt!', color: 'bg-blue-100 text-blue-800' };
-    if (score >= 7) return { emoji: '👍', text: 'Khá!', color: 'bg-yellow-100 text-yellow-800' };
-    return { emoji: '💪', text: 'Cố gắng!', color: 'bg-orange-100 text-orange-800' };
-  };
+  if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-purple-600 w-8 h-8" /></div>;
 
   return (
     <div className="space-y-6">
@@ -205,9 +97,9 @@ export function StudentGrades() {
             <Trophy className="w-8 h-8" />
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-bold">Điểm số của bé 🏆</h2>
+            <h2 className="text-2xl font-bold">Thành tích học tập</h2>
             <p className="text-yellow-100">
-              Điểm trung bình: {stats.averageScore}/10 - Hạng {stats.currentRank}/{stats.totalStudents} trong lớp
+              Bạn đã hoàn thành {stats.totalQuizzes} bài tập với điểm trung bình {stats.averageScore}
             </p>
           </div>
           <div className="text-right">
@@ -224,7 +116,7 @@ export function StudentGrades() {
             <div className="text-center">
               <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-blue-600">{stats.totalQuizzes}</div>
-              <p className="text-sm text-muted-foreground">Bài quiz</p>
+              <p className="text-sm text-muted-foreground">Bài đã làm</p>
             </div>
           </CardContent>
         </Card>
@@ -249,14 +141,14 @@ export function StudentGrades() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-pink-50">
-          <CardContent className="p-4">
-            <div className="text-center">
-              <Award className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-purple-600">{stats.badges}</div>
-              <p className="text-sm text-muted-foreground">Huy hiệu</p>
-            </div>
-          </CardContent>
+        <Card className="bg-purple-50/50 border-purple-100">
+            <CardContent className="p-4 text-center">
+                <TrendingUp className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                <div className="text-xl font-bold text-purple-700">
+                    {progressData.length > 0 ? progressData[progressData.length-1].score : 0}
+                </div>
+                <p className="text-xs text-purple-600">Điểm tháng này</p>
+            </CardContent>
         </Card>
       </div>
 
@@ -271,51 +163,39 @@ export function StudentGrades() {
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Biểu đồ điểm trung bình theo môn */}
+            {/* Biểu đồ điểm theo môn */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart className="w-5 h-5" />
-                  Điểm theo môn học
-                </CardTitle>
-                <CardDescription>
-                  Điểm trung bình của bé ở từng môn
-                </CardDescription>
+                <CardTitle className="text-base">Điểm trung bình theo môn</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={subjectAverages}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="subject" />
-                    <YAxis domain={[0, 10]} />
-                    <Tooltip />
-                    <Bar dataKey="score" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="subject" fontSize={12} />
+                    <YAxis domain={[0, 10]} hide />
+                    <Tooltip cursor={{fill: 'transparent'}} />
+                    <Bar dataKey="score" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} label={{ position: 'top', fill: '#666', fontSize: 12 }} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            {/* Phân bố điểm */}
+            {/* Biểu đồ tròn phân bố điểm */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChart className="w-5 h-5" />
-                  Phân bố điểm số
-                </CardTitle>
-                <CardDescription>
-                  Tỷ lệ các mức điểm của bé
-                </CardDescription>
+                <CardTitle className="text-base">Phân bố điểm số</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
                       data={scoreDistribution}
                       cx="50%"
                       cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      innerRadius={60}
                       outerRadius={80}
-                      fill="#8884d8"
+                      paddingAngle={5}
                       dataKey="value"
                     >
                       {scoreDistribution.map((entry, index) => (
@@ -323,13 +203,14 @@ export function StudentGrades() {
                       ))}
                     </Pie>
                     <Tooltip />
+                    <Legend verticalAlign="bottom" height={36}/>
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
 
-          {/* Điểm mạnh và cần cải thiện */}
+          {/* Điểm mạnh và cần cải thiện
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
               <CardHeader>
@@ -373,101 +254,66 @@ export function StudentGrades() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </div> */}
         </TabsContent>
 
         {/* Tab: Danh sách bài quiz */}
         <TabsContent value="quizzes" className="space-y-4">
-          {quizResults.map((quiz) => {
+          {quizResults.length === 0 ? (
+              <div className="text-center py-10 text-gray-500">Chưa có bài tập nào được hoàn thành.</div>
+          ) : (
+            quizResults.map((quiz) => {
             const badge = getScoreBadge(quiz.score);
             return (
-              <Card key={quiz.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
+              <Card key={quiz.id} className="hover:shadow-md transition-all border-l-4 border-l-purple-500">
+                <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="flex items-center gap-2">
+                    <div>
+                      <CardTitle className="text-lg flex items-center gap-2">
                         {quiz.title}
                       </CardTitle>
-                      <CardDescription className="mt-2">
-                        {quiz.subject} • {new Date(quiz.date).toLocaleDateString('vi-VN')}
+                      <CardDescription className="flex items-center gap-2 mt-1">
+                        <span className="bg-gray-100 px-2 py-0.5 rounded text-xs font-medium text-gray-600">{quiz.subject}</span>
+                        <span>• {new Date(quiz.date).toLocaleDateString('vi-VN')}</span>
                       </CardDescription>
                     </div>
                     <div className="text-right">
-                      <div className={`text-3xl font-bold ${getScoreColor(quiz.score)}`}>
+                      <div className={`text-2xl font-bold ${getScoreColor(quiz.score)}`}>
                         {quiz.score}
                       </div>
-                      <div className="text-sm text-muted-foreground">/{quiz.maxScore}</div>
+                      <div className="text-xs text-muted-foreground">/ {quiz.maxScore} điểm</div>
                     </div>
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
-                  {/* Badges */}
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className={badge.color}>
+                <CardContent className="space-y-3">
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    <Badge className={`${badge.color} border-0`}>
                       {badge.emoji} {badge.text}
                     </Badge>
-                    <Badge variant="outline" className={getDifficultyColor(quiz.difficulty)}>
-                      {quiz.difficulty}
+                    <Badge variant="outline">
+                       {quiz.correctAnswers}/{quiz.totalQuestions} câu đúng
                     </Badge>
                     <Badge variant="outline">
-                      {quiz.correctAnswers}/{quiz.totalQuestions} câu đúng
-                    </Badge>
-                    <Badge variant="outline">
-                      ⏱️ {quiz.timeSpent}
+                       ⏱️ {quiz.timeSpent}
                     </Badge>
                   </div>
 
-                  {/* Topic Scores */}
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium flex items-center gap-2">
-                      <Target className="w-4 h-4" />
-                      Điểm theo chủ đề
-                    </h4>
-                    {Object.entries(quiz.topicScores).map(([topic, score]) => (
-                      <div key={topic} className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>{topic}</span>
-                          <span className="font-medium">{score}/10</span>
+                  {/* Feedback AI */}
+                  {quiz.aiFeedback && (
+                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-100 flex gap-3 items-start">
+                        <Brain className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                        <div>
+                            <p className="text-xs font-bold text-blue-700 uppercase mb-1">Nhận xét từ AI</p>
+                            <p className="text-sm text-blue-800 leading-relaxed">{quiz.aiFeedback}</p>
                         </div>
-                        <Progress value={score * 10} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* AI Feedback */}
-                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <h5 className="flex items-center gap-2 font-medium text-blue-800 mb-2">
-                      <Brain className="w-4 h-4" />
-                      Nhận xét từ AI
-                    </h5>
-                    <p className="text-sm text-blue-700">{quiz.aiFeedback}</p>
-                  </div>
-
-                  {/* AI Suggestions */}
-                  <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <h5 className="flex items-center gap-2 font-medium text-purple-800 mb-2">
-                      <Lightbulb className="w-4 h-4" />
-                      Gợi ý học tập từ AI
-                    </h5>
-                    <ul className="space-y-1">
-                      {quiz.aiSuggestions.map((suggestion, idx) => (
-                        <li key={idx} className="text-sm text-purple-700 flex items-start gap-2">
-                          <span className="text-purple-500 mt-0.5">•</span>
-                          <span>{suggestion}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <Button variant="outline" className="w-full">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Xem chi tiết & làm lại
-                  </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );
-          })}
+          })
+          )}
         </TabsContent>
 
         {/* Tab: Tiến độ */}
@@ -476,17 +322,15 @@ export function StudentGrades() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" />
-                Tiến độ theo thời gian
+                Biểu đồ phát triển
               </CardTitle>
-              <CardDescription>
-                Điểm trung bình của bé qua các tháng
-              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={progressData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
+              {progressData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={progressData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+                  <XAxis dataKey="month" padding={{ left: 30, right: 30 }}/>
                   <YAxis domain={[0, 10]} />
                   <Tooltip />
                   <Legend />
@@ -495,23 +339,17 @@ export function StudentGrades() {
                     dataKey="score" 
                     stroke="#3b82f6" 
                     strokeWidth={3}
-                    dot={{ fill: '#3b82f6', r: "Điểm TB"}}
+                    dot={{ fill: '#3b82f6', r: 4, strokeWidth: 2, stroke: '#fff'}}
                   />
                 </LineChart>
               </ResponsiveContainer>
-
-              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center gap-2 text-green-800">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="font-medium">
-                    Tiến bộ rõ rệt! Bé đã cải thiện +1.1 điểm trong 3 tháng qua 🎉
-                  </span>
-                </div>
-              </div>
+            ) : (
+                  <p className="text-center text-gray-500 py-10">Chưa đủ dữ liệu để vẽ biểu đồ.</p>
+              )}  
             </CardContent>
           </Card>
 
-          {/* Mục tiêu */}
+          {/* Mục tiêu
           <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-purple-700">
@@ -544,7 +382,7 @@ export function StudentGrades() {
                 <Progress value={80} className="h-2" />
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </TabsContent>
       </Tabs>
     </div>

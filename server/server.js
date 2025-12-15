@@ -19,6 +19,7 @@ import classRoutes from "./routes/classRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import submissionRoutes from "./routes/submissionRoutes.js";
+import gradeRoutes from "./routes/gradeRoutes.js";
 
 import verifyToken from "./middleware/verifyToken.js";
 import checkRole from "./middleware/checkRole.js";
@@ -80,6 +81,8 @@ app.use("/assignments", assignmentRoutes);
 
 // Route Submission
 app.use("/submissions", submissionRoutes);
+
+app.use("/api/grades", gradeRoutes);
 
 
 

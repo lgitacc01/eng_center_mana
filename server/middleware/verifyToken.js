@@ -17,11 +17,12 @@ const verifyToken = (req, res, next) => {
     // 3. Xác thực token
     // Nó sẽ dùng JWT_SECRET của bạn để giải mã
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("👉 DECIDED TOKEN:", decoded); // Xem log này ở terminal server
 
     // 4. Nếu hợp lệ, giải mã thành công
     // Gắn thông tin user (payload) vào đối tượng request
     req.user = decoded.user;
-    
+ 
     // 5. Cho phép request đi tiếp
     next();
   } catch (err) {

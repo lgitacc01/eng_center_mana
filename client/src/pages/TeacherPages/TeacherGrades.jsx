@@ -139,11 +139,6 @@ export default function TeacherGrades() {
     return "Yếu";
   };
 
-  // Tính toán thống kê tổng quan
-  const classAverage = studentGrades.length > 0
-    ? (studentGrades.reduce((sum, s) => sum + s.average, 0) / studentGrades.length).toFixed(1)
-    : 0;
-  
   const excellentCount = studentGrades.filter(s => s.average >= 9.0).length;
 
   return (

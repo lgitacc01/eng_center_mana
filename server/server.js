@@ -45,9 +45,13 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Route test
 app.get("/", (req, res) => {
-  res.send("Hello from MongoDB Atlas!");
+  res.send("Hello from MongoDB Atlas merge from main!");
+
 });
+
 console.log("anh test eslint hehe");
+
+
 
 
 // Route /users (của bạn)

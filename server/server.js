@@ -13,7 +13,7 @@ import verifyToken from "./middleware/verifyToken.js";
 import checkRole from "./middleware/checkRole.js";
 
 dotenv.config();
-  
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -25,7 +25,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Route test
 app.get("/", (req, res) => {
-  res.send("Hello from MongoDB Atlas merge from main!");
+  res.send("Hello from MongoDB Atlas merge from main123!");
 
 });
 
